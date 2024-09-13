@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.liquibase.org/xml/ns/dbchangelog
+           http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Создаем схему admin -->
+    <changeSet id="1" author="assistant">
+        <createSchema schemaName="admin"/>
+    </changeSet>
+
+    <!-- Создаем таблицу organizations в схеме admin -->
+    <changeSet id="2" author="assistant">
+        <createTable schemaName="admin" tableName="organization">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="bigserial"/>
+            <column name="name" type="varchar(255)" nullable="false"/>
+            <column name="inn" type="varchar(12)"/>
+            <column name="avatar_path" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Добавляем уникальный индекс на поле code -->
+    <changeSet id="3" author="assistant">
+        <addUniqueConstraint schemaName="admin"
+                             tableName="organization"
+                             columnNames="code"
+                             constraintName="uc_organization_code"/>
+    </changeSet>
+
+</databaseChangeLog>

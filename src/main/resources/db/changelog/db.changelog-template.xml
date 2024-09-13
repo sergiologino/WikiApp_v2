@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.liquibase.org/xml/ns/dbchangelog
+           http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Создаем шаблонную схему -->
+    <changeSet id="1" author="assistant">
+        <createSchema schemaName="template"/>
+    </changeSet>
+
+    <!-- Создаем таблицы в шаблонной схеме -->
+    <!-- Пример для таблицы user -->
+    <changeSet id="2" author="assistant">
+        <createTable schemaName="template" tableName="user">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="varchar(50)" nullable="false">
+                <constraints unique="true"/>
+            </column>
+            <column name="password" type="varchar(255)" nullable="false"/>
+            <column name="email" type="varchar(255)"/>
+            <column name="position" type="varchar(100)"/>
+            <column name="active" type="boolean" defaultValueBoolean="true"/>
+            <column name="deleted" type="boolean" defaultValueBoolean="false"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Аналогично добавляем таблицы для ролей, документов и других сущностей -->
+
+</databaseChangeLog>
