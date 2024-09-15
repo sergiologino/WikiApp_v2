@@ -2,6 +2,7 @@ package ru.altacod.wikiapp.dto;
 
 import java.util.Set;
 import java.util.UUID;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * DTO для сущности Role.
@@ -9,9 +10,16 @@ import java.util.UUID;
 public class RoleDTO {
 
     private UUID id;
+
+    @NotBlank(message = "Имя роли не должно быть пустым")
     private String name;
+
+    @NotBlank(message = "Уровень доступа не должен быть пустым")
     private String accessLevel;
+
     private Set<UUID> userIds;
+    private Set<UUID> documentIds;
+    private Set<UUID> spaceIds;
 
     // Геттеры и сеттеры
 
@@ -45,5 +53,21 @@ public class RoleDTO {
 
     public void setUserIds(Set<UUID> userIds) {
         this.userIds = userIds;
+    }
+
+    public Set<UUID> getDocumentIds() {
+        return documentIds;
+    }
+
+    public void setDocumentIds(Set<UUID> documentIds) {
+        this.documentIds = documentIds;
+    }
+
+    public Set<UUID> getSpaceIds() {
+        return spaceIds;
+    }
+
+    public void setSpaceIds(Set<UUID> spaceIds) {
+        this.spaceIds = spaceIds;
     }
 }

@@ -28,5 +28,7 @@ public interface DocumentVersionRepository extends JpaRepository<DocumentVersion
      * @return версия документа
      */
     Optional<DocumentVersion> findByDocumentIdAndVersionNumber(UUID documentId, int versionNumber);
+
+    List<DocumentVersion> findByDocumentIdAndVersionNumberIn(UUID documentId, List<Integer> versionNumbers);
 }
 

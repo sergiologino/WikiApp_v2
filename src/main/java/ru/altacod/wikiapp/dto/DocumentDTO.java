@@ -1,6 +1,7 @@
 package ru.altacod.wikiapp.dto;
 
 import java.util.UUID;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * DTO для сущности Document.
@@ -8,7 +9,10 @@ import java.util.UUID;
 public class DocumentDTO {
 
     private UUID id;
+
+    @NotBlank(message = "Заголовок не должен быть пустым")
     private String title;
+
     private String content;
     private boolean deleted;
     private UUID parentId;

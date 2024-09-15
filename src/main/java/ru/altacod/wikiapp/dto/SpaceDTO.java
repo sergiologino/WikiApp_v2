@@ -1,6 +1,7 @@
 package ru.altacod.wikiapp.dto;
 
 import java.util.UUID;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * DTO для сущности Space.
@@ -8,7 +9,10 @@ import java.util.UUID;
 public class SpaceDTO {
 
     private UUID id;
+
+    @NotBlank(message = "Название раздела не должно быть пустым")
     private String name;
+
     private boolean active;
 
     // Геттеры и сеттеры

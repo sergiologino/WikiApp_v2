@@ -1,5 +1,7 @@
 package ru.altacod.wikiapp.controller;
 
+import ru.altacod.wikiapp.dto.DocumentDTO;
+import ru.altacod.wikiapp.dto.DocumentVersionDTO;
 import ru.altacod.wikiapp.entity.Document;
 import ru.altacod.wikiapp.entity.DocumentVersion;
 import ru.altacod.wikiapp.service.DocumentService;
@@ -32,8 +34,8 @@ public class DocumentController {
      */
     @PostMapping
     @Operation(summary = "Создать документ", description = "Создает новый документ.")
-    public Document createDocument(@RequestBody Document document) {
-        return documentService.createDocument(document);
+    public DocumentDTO createDocument(@RequestBody DocumentDTO documentDTO) {
+        return documentService.createDocument(documentDTO);
     }
 
     /**
@@ -44,7 +46,7 @@ public class DocumentController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Получить документ", description = "Возвращает документ по ID.")
-    public Document getDocument(@PathVariable UUID id) {
+    public DocumentDTO getDocument(@PathVariable UUID id) {
         return documentService.getDocumentById(id);
     }
 
@@ -63,38 +65,40 @@ public class DocumentController {
      * Получить черновик документа.
      *
      * @param id ID документа
-     * @return черновик
+     * @return черновик в виде DTO
      */
     @GetMapping("/{id}/draft")
     @Operation(summary = "Получить черновик", description = "Возвращает черновик документа.")
-    public DocumentVersion getDraft(@PathVariable UUID id) {
+    public DocumentVersionDTO getDraft(@PathVariable UUID id) {
         return documentService.getDraft(id);
     }
+
 
     /**
      * Сохранить черновик документа.
      *
-     * @param id      ID документа
-     * @param content контент черновика
-     * @return сохраненный черновик
+     * @param id  ID документа
+     * @param dto DTO черновика
+     * @return сохраненный черновик в виде DTO
      */
     @PostMapping("/{id}/draft")
     @Operation(summary = "Сохранить черновик", description = "Сохраняет черновик документа.")
-    public DocumentVersion saveDraft(@PathVariable UUID id, @RequestBody String content) {
-        return documentService.saveDraft(id, content);
+    public DocumentVersionDTO saveDraft(@PathVariable UUID id, @RequestBody DocumentVersionDTO dto) {
+        return documentService.saveDraft(id, dto);
     }
 
     /**
      * Получить все версии документа.
      *
      * @param id ID документа
-     * @return список версий
+     * @return список версий в виде DTO
      */
     @GetMapping("/{id}/versions")
     @Operation(summary = "Получить версии документа", description = "Возвращает все версии документа.")
-    public List<DocumentVersion> getDocumentVersions(@PathVariable UUID id) {
+    public List<DocumentVersionDTO> getDocumentVersions(@PathVariable UUID id) {
         return documentService.getDocumentVersions(id);
     }
+
 
     /**
      * Получить выбранные версии документа.
@@ -105,7 +109,8 @@ public class DocumentController {
      */
     @GetMapping("/{id}/versions/selected")
     @Operation(summary = "Получить выбранные версии", description = "Возвращает выбранные версии документа.")
-    public List<DocumentVersion> getSelectedVersions(@PathVariable UUID id, @RequestParam List<Integer> versionNumbers) {
+    public List<DocumentVersionDTO> getSelectedVersions(@PathVariable UUID id, @RequestParam List<Integer> versionNumbers) {
         return documentService.getSelectedVersions(id, versionNumbers);
     }
+
 }

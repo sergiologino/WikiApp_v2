@@ -1,12 +1,20 @@
 package ru.altacod.wikiapp.service;
 
+import ru.altacod.wikiapp.dto.DocumentDTO;
+import ru.altacod.wikiapp.dto.DocumentVersionDTO;
 import ru.altacod.wikiapp.entity.Document;
 import ru.altacod.wikiapp.entity.DocumentVersion;
+import ru.altacod.wikiapp.entity.Space;
+import ru.altacod.wikiapp.mapper.DocumentMapper;
+import ru.altacod.wikiapp.mapper.DocumentVersionMapper;
 import ru.altacod.wikiapp.repository.DocumentRepository;
 import ru.altacod.wikiapp.repository.DocumentVersionRepository;
+import ru.altacod.wikiapp.repository.SpaceRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -18,31 +26,52 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final DocumentVersionRepository documentVersionRepository;
+    private final SpaceRepository spaceRepository;
 
-    public DocumentService(DocumentRepository documentRepository, DocumentVersionRepository documentVersionRepository) {
+    public DocumentService(DocumentRepository documentRepository,
+                           DocumentVersionRepository documentVersionRepository,
+                           SpaceRepository spaceRepository) {
         this.documentRepository = documentRepository;
         this.documentVersionRepository = documentVersionRepository;
+        this.spaceRepository = spaceRepository;
     }
 
     /**
      * Создать новый документ.
      *
-     * @param document объект документа
-     * @return созданный документ
+     * @param documentDTO DTO документа
+     * @return созданный документ в виде DTO
      */
-    public Document createDocument(Document document) {
-        return documentRepository.save(document);
+    public DocumentDTO createDocument(DocumentDTO documentDTO) {
+        Document document = DocumentMapper.toEntity(documentDTO);
+
+        // Устанавливаем связи
+        if (documentDTO.getSpaceId() != null) {
+            Space space = spaceRepository.findById(documentDTO.getSpaceId())
+                    .orElseThrow(() -> new RuntimeException("Раздел не найден"));
+            document.setSpace(space);
+        }
+
+        if (documentDTO.getParentId() != null) {
+            Document parent = documentRepository.findById(documentDTO.getParentId())
+                    .orElseThrow(() -> new RuntimeException("Родительский документ не найден"));
+            document.setParent(parent);
+        }
+
+        documentRepository.save(document);
+        return DocumentMapper.toDTO(document);
     }
 
     /**
      * Получить документ по ID.
      *
      * @param id ID документа
-     * @return документ
+     * @return документ в виде DTO
      */
-    public Document getDocumentById(UUID id) {
-        return documentRepository.findById(id)
+    public DocumentDTO getDocumentById(UUID id) {
+        Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Документ не найден"));
+        return DocumentMapper.toDTO(document);
     }
 
     /**
@@ -51,61 +80,70 @@ public class DocumentService {
      * @param id ID документа
      */
     public void deleteDocument(UUID id) {
-        Document document = getDocumentById(id);
+        Document document = documentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Документ не найден"));
         document.setDeleted(true);
         documentRepository.save(document);
-    }
-
-    /**
-     * Получить черновик документа.
-     *
-     * @param documentId ID документа
-     * @return черновик
-     */
-    public DocumentVersion getDraft(UUID documentId) {
-        return documentVersionRepository.findByDocumentIdAndVersionNumber(documentId, -1)
-                .orElseThrow(() -> new RuntimeException("Черновик не найден"));
     }
 
     /**
      * Сохранить черновик документа.
      *
      * @param documentId ID документа
-     * @param content    контент черновика
-     * @return сохраненный черновик
+     * @param dto    контент черновика
+     * @return сохраненный черновик в виде DTO
      */
-    public DocumentVersion saveDraft(UUID documentId, String content) {
-        Document document = getDocumentById(documentId);
+    public DocumentVersionDTO saveDraft(UUID documentId, DocumentVersionDTO dto) {
+        Optional<Document> document = documentRepository.findById(documentId);
         DocumentVersion draft = documentVersionRepository.findByDocumentIdAndVersionNumber(documentId, -1)
                 .orElse(new DocumentVersion());
 
-        draft.setDocument(document);
-        draft.setVersionNumber(-1);
-        draft.setContent(content);
+        draft = DocumentVersionMapper.toEntity(dto, document);
+        draft.setVersionNumber(-1); // Устанавливаем версию черновика
+        documentVersionRepository.save(draft);
 
-        return documentVersionRepository.save(draft);
+        return DocumentVersionMapper.toDTO(draft);
     }
 
     /**
-     * Получить все версии документа.
+     * Получить черновик документа.
      *
      * @param documentId ID документа
-     * @return список версий
+     * @return черновик в виде DTO
      */
-    public List<DocumentVersion> getDocumentVersions(UUID documentId) {
-        return documentVersionRepository.findByDocumentId(documentId);
+    public DocumentVersionDTO getDraft(UUID documentId) {
+        DocumentVersion draft = documentVersionRepository.findByDocumentIdAndVersionNumber(documentId, -1)
+                .orElseThrow(() -> new RuntimeException("Черновик не найден"));
+        return DocumentVersionMapper.toDTO(draft);
     }
 
-    /**
-     * Получить выбранные версии документа.
-     *
-     * @param documentId     ID документа
-     * @param versionNumbers список номеров версий
-     * @return список версий
-     */
-    public List<DocumentVersion> getSelectedVersions(UUID documentId, List<Integer> versionNumbers) {
+    public List<DocumentVersionDTO> getDocumentVersions(UUID documentId) {
         return documentVersionRepository.findByDocumentId(documentId).stream()
-                .filter(version -> versionNumbers.contains(version.getVersionNumber()))
+                .map(DocumentVersionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+    public List<DocumentVersionDTO> getSelectedVersions(UUID documentId, List<Integer> versionNumbers) {
+        // Проверяем, что список номеров версий не пустой
+        if (versionNumbers == null || versionNumbers.isEmpty()) {
+            throw new IllegalArgumentException("Список номеров версий не должен быть пустым");
+        }
+
+        // Проверяем существование документа
+        DocumentDTO document = getDocumentById(documentId);
+
+        // Получаем версии из репозитория
+        List<DocumentVersion> versions = documentVersionRepository.findByDocumentIdAndVersionNumberIn(documentId, versionNumbers);
+
+        if (versions.isEmpty()) {
+            throw new RuntimeException("Запрошенные версии не найдены");
+        }
+
+        // Преобразуем сущности в DTO
+        return versions.stream()
+                .map(DocumentVersionMapper::toDTO)
                 .collect(Collectors.toList());
     }
 }
+
+
+
