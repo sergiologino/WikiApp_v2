@@ -14,7 +14,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info().title("WikiApp API")
                         .description("Документация API для WikiApp")
-                        .version("v0.0.1"));
+                        .version("v0.1.2"));
     }
 }
 
