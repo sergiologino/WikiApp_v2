@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -81,7 +82,7 @@ public class DocumentVersion {
         return document;
     }
 
-    public void setDocument(Document document) {
+    public void setDocument(Optional<Document> document) {
         this.document = document;
     }
 }

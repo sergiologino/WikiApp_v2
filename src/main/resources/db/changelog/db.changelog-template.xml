@@ -11,8 +11,7 @@
         <createSchema schemaName="template"/>
     </changeSet>
 
-    <!-- Создаем таблицы в шаблонной схеме -->
-    <!-- Пример для таблицы user -->
+    <!-- Таблица user -->
     <changeSet id="2" author="assistant">
         <createTable schemaName="template" tableName="user">
             <column name="id" type="uuid">
@@ -22,13 +21,99 @@
                 <constraints unique="true"/>
             </column>
             <column name="password" type="varchar(255)" nullable="false"/>
+
             <column name="email" type="varchar(255)"/>
             <column name="position" type="varchar(100)"/>
             <column name="active" type="boolean" defaultValueBoolean="true"/>
             <column name="deleted" type="boolean" defaultValueBoolean="false"/>
+            <column name="organization_id" type="uuid"/>
+        </createTable>
+    </changeSet>
+        <!-- Таблица role -->
+    <changeSet id="3" author="assistant">
+        <createTable schemaName="template" tableName="role">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)" nullable="false"/>
+            <column name="access_level" type="varchar(20)" nullable="false"/>
         </createTable>
     </changeSet>
 
-    <!-- Аналогично добавляем таблицы для ролей, документов и других сущностей -->
+        <!-- Таблица user_roles -->
+    <changeSet id="4" author="assistant">
+        <createTable schemaName="template" tableName="user_roles">
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    <addPrimaryKey schemaName="template" tableName="user_roles" columnNames="user_id, role_id" constraintName="pk_user_roles"/>
+    </changeSet>
 
-</databaseChangeLog>
+        <!-- Таблица document -->
+    <changeSet id="5" author="assistant">
+        <createTable schemaName="template" tableName="document">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="title" type="varchar(255)" nullable="false"/>
+            <column name="content" type="text"/>
+            <column name="deleted" type="boolean" defaultValueBoolean="false"/>
+            <column name="parent_id" type="uuid"/>
+            <column name="space_id" type="uuid"/>
+        </createTable>
+    </changeSet>
+
+        <!-- Таблица document_version -->
+    <changeSet id="6" author="assistant">
+        <createTable schemaName="template" tableName="document_version">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="version_number" type="int" nullable="false"/>
+            <column name="content" type="text"/>
+            <column name="created_at" type="timestamp"/>
+            <column name="document_id" type="uuid"/>
+        </createTable>
+    </changeSet>
+
+        <!-- Таблица space -->
+    <changeSet id="7" author="assistant">
+        <createTable schemaName="template" tableName="space">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(100)" nullable="false"/>
+            <column name="active" type="boolean" defaultValueBoolean="true"/>
+        </createTable>
+    </changeSet>
+
+        <!-- Таблица role_documents -->
+    <changeSet id="8" author="assistant">
+        <createTable schemaName="template" tableName="role_documents">
+            <column name="role_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    <addPrimaryKey schemaName="template" tableName="role_documents" columnNames="role_id, document_id" constraintName="pk_role_documents"/>
+    </changeSet>
+
+        <!-- Таблица role_spaces -->
+    <changeSet id="9" author="assistant">
+        <createTable schemaName="template" tableName="role_spaces">
+            <column name="role_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="space_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    <addPrimaryKey schemaName="template" tableName="role_spaces" columnNames="role_id, space_id" constraintName="pk_role_spaces"/>
+    </changeSet>
+        </databaseChangeLog>

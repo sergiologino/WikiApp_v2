@@ -3,8 +3,8 @@ spring:
     name: WikiApp
   datasource:
     url: jdbc:postgresql://localhost:5432/wikiapp
-    username: your_username
-    password: your_password
+    username: postgres
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: none
