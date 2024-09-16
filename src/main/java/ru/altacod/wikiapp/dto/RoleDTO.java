@@ -2,6 +2,8 @@ package ru.altacod.wikiapp.dto;
 
 import java.util.Set;
 import java.util.UUID;
+
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -69,5 +71,38 @@ public class RoleDTO {
 
     public void setSpaceIds(Set<UUID> spaceIds) {
         this.spaceIds = spaceIds;
+    }
+
+    /**
+     * DTO для сущности User.
+     */
+    public class UserDTO {
+
+        private UUID id;
+
+        @NotBlank(message = "Имя пользователя не должно быть пустым")
+        private String username;
+
+        @NotBlank(message = "Пароль не должен быть пустым")
+        private String password;
+
+        @Email(message = "Некорректный email")
+        private String email;
+
+        private String position;
+        private boolean active;
+        private boolean deleted;
+
+        // Геттеры и сеттеры
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        // Остальные геттеры и сеттеры
     }
 }

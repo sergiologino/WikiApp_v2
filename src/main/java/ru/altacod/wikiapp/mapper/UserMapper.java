@@ -34,7 +34,7 @@ public class UserMapper {
         user.setPosition(dto.getPosition());
         user.setActive(dto.isActive());
         user.setDeleted(dto.isDeleted());
-        // Роли устанавливаются в сервисе, поскольку нужно получить сущности ролей по их ID
+        // Пароль будет захеширован в UserService
         return user;
     }
 }

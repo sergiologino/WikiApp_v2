@@ -7,6 +7,8 @@ import ru.altacod.wikiapp.mapper.UserMapper;
 import ru.altacod.wikiapp.repository.UserRepository;
 import ru.altacod.wikiapp.repository.RoleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 import java.util.Set;
@@ -20,10 +22,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -32,10 +36,14 @@ public class UserService {
      * @param userDTO DTO пользователя
      * @return созданный пользователь в виде DTO
      */
+    @Transactional
     public UserDTO createUser(UserDTO userDTO) {
         User user = UserMapper.toEntity(userDTO);
-        // Пароль должен быть захеширован, здесь просто пример
-        user.setPassword(userDTO.getPassword());
+
+        // Генерация защищенного пароля
+        String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
+        user.setPassword(hashedPassword);
+
         userRepository.save(user);
         return UserMapper.toDTO(user);
     }
@@ -46,6 +54,7 @@ public class UserService {
      * @param userId  ID пользователя
      * @param roleIds набор ID ролей
      */
+    @Transactional
     public void assignRolesToUser(UUID userId, Set<UUID> roleIds) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
@@ -60,6 +69,7 @@ public class UserService {
      * @param userDTO DTO пользователя
      * @return обновленный пользователь в виде DTO
      */
+    @Transactional
     public UserDTO updateUser(UserDTO userDTO) {
         User user = userRepository.findById(userDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
