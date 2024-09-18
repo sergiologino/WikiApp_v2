@@ -1,9 +1,11 @@
 package ru.altacod.wikiapp.filter;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.*;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
@@ -55,7 +57,11 @@ public class SchemaFilter implements Filter {
             httpServletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка переключения схемы: " + e.getMessage());
         } finally {
             // После обработки запроса сбрасываем схему
-            resetSchema();
+            try {
+                resetSchema();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

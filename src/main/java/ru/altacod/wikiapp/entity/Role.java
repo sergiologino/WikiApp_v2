@@ -107,4 +107,7 @@ public class Role {
     public void setSpaces(Set<Space> spaces) {
         this.spaces = spaces;
     }
+//    public void setSpace(Space space) {
+//        this.spaces = space;
+//    }
 }

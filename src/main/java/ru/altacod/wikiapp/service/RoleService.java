@@ -13,6 +13,7 @@ import ru.altacod.wikiapp.repository.SpaceRepository;
 
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -86,6 +87,26 @@ public class RoleService {
     }
 
     /**
+     * Назначить роль документу.
+     *
+     * @param roleId      ID роли
+     * @param documentId набор ID документов
+     */
+    public void assignRoleToDocument(UUID roleId, UUID documentId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Роль не найдена"));
+
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Документ не найден"));
+
+        // Добавляем документ к роли
+        role.getDocuments().add(document);
+
+        // Сохраняем изменения
+        roleRepository.save(role);
+    }
+
+    /**
      * Назначить роль разделам.
      *
      * @param roleId   ID роли
@@ -95,6 +116,22 @@ public class RoleService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException("Роль не найдена"));
         Set<Space> spaces = spaceRepository.findAllById(spaceIds).stream().collect(Collectors.toSet());
+        role.setSpaces(spaces);
+        roleRepository.save(role);
+    }
+    /**
+     * Назначить роль разделам.
+     *
+     * @param roleId   ID роли
+     * @param spaceId набор ID разделов
+     */
+    public void assignRoleToSpace(UUID roleId, UUID spaceId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Роль не найдена"));
+        Space space = spaceRepository.findById(spaceId)
+         .orElseThrow(() -> new RuntimeException("Роль не найдена"));
+        Set<Space> spaces = new HashSet<>();
+        spaces.add(space);
         role.setSpaces(spaces);
         roleRepository.save(role);
     }

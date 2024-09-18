@@ -83,7 +83,8 @@ public class DocumentVersion {
     }
 
     public void setDocument(Optional<Document> document) {
-        this.document = document;
+        this.document = document.orElse(null);
     }
+
 }
 

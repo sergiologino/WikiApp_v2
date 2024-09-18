@@ -1,5 +1,6 @@
 package ru.altacod.wikiapp.controller;
 
+import ru.altacod.wikiapp.dto.RoleDTO;
 import ru.altacod.wikiapp.entity.Role;
 import ru.altacod.wikiapp.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class RoleController {
      */
     @PostMapping
     @Operation(summary = "Создать роль", description = "Создает новую роль.")
-    public Role createRole(@RequestBody Role role) {
+    public RoleDTO createRole(@RequestBody RoleDTO role) {
         return roleService.createRole(role);
     }
 
