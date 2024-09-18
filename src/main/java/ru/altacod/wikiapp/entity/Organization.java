@@ -13,8 +13,9 @@ public class Organization {
     @Id
     private UUID id;
 
-    @Column(nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true) // Указываем, что поле должно быть непустым и уникальным
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "org_code_gen")
+    @SequenceGenerator(name = "org_code_gen", sequenceName = "organization_code_seq", allocationSize = 1)
     private Long code; // Уникальный числовой код с автоинкрементом
 
     @Column(nullable = false)

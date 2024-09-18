@@ -31,5 +31,9 @@
                              columnNames="code"
                              constraintName="uc_organization_code"/>
     </changeSet>
+    <changeSet id="create-sequence" author="assistant">
+        <createSequence sequenceName="organization_code_seq" startValue="1" incrementBy="1"/>
+    </changeSet>
+
 
 </databaseChangeLog>
