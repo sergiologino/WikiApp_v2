@@ -12,6 +12,7 @@ import java.util.Set;
 public class Document {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(nullable = false)

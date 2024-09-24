@@ -1,9 +1,7 @@
 package ru.altacod.wikiapp.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,6 +12,7 @@ import java.util.UUID;
 public class Space {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(nullable = false)
